@@ -27,7 +27,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -72,7 +71,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -101,19 +99,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
-
               /// IMAGEM LOCAL
               SizedBox(
                 height: 220,
                 width: double.infinity,
                 child: Image.asset(
-                  "assets/images/candy 1.jpg",
+                  "candy_1.jpg",
                   fit: BoxFit.cover,
                 ),
               ),
@@ -140,10 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               const SizedBox(height: 20),
 
-              const Text(
-                "Ou entre com:",
-                style: TextStyle(fontSize: 16),
-              ),
+              const Text("Ou entre com:", style: TextStyle(fontSize: 16)),
 
               const SizedBox(height: 20),
 
@@ -195,7 +188,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Row(
                   children: [
-
                     Checkbox(
                       value: rememberMe,
                       onChanged: (value) {
@@ -209,8 +201,10 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     const Spacer(),
 
-                    GestureDetector(
-                      onTap: forgotPassword,
+                    InkWell(
+                      onTap: () {
+                        print("Esqueceu a senha clicado");
+                      },
                       child: const Text(
                         "Esqueceu a senha?",
                         style: TextStyle(
@@ -218,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -236,10 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                     ),
-                    child: const Text(
-                      "Entrar",
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    child: const Text("Entrar", style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ),
@@ -250,11 +241,16 @@ class _LoginScreenState extends State<LoginScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-
                   const Text("Não tem uma conta? "),
-
-                  GestureDetector(
-                    onTap: register,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RegisterScreen(),
+                        ),
+                      );
+                    },
                     child: const Text(
                       "Registre-se",
                       style: TextStyle(
@@ -262,14 +258,254 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  )
-
+                  ),
                 ],
               ),
-
-              const SizedBox(height: 30),
-
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
+  @override
+  State<RegisterScreen> createState() => _RegisterScreenState();
+}
+
+class _RegisterScreenState extends State<RegisterScreen> {
+
+  final nameController = TextEditingController();
+  final emailController = TextEditingController();
+  final birthController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  bool obscurePassword = true;
+  bool obscureConfirmPassword = true;
+
+  String passwordMessage = "";
+
+  Future<void> selectDate() async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+
+    if (picked != null) {
+      setState(() {
+        birthController.text =
+            "${picked.day}/${picked.month}/${picked.year}";
+      });
+    }
+  }
+
+  void validatePassword() {
+    setState(() {
+      if (confirmPasswordController.text.isEmpty) {
+        passwordMessage = "";
+      } else if (passwordController.text ==
+          confirmPasswordController.text) {
+        passwordMessage = "Senhas iguais";
+      } else {
+        passwordMessage = "Senhas não coincidem";
+      }
+    });
+  }
+
+  void register() {
+    print("Usuário registrado");
+  }
+
+  void goToLogin() {
+    Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      backgroundColor: Colors.orange,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.9,
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+
+                  const Center(
+                    child: Text(
+                      "Registro",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text("Já possui uma conta? "),
+                      InkWell(
+                        onTap: goToLogin,
+                        child: const Text(
+                          "Entrar",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(
+                      labelText: "Nome completo",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: birthController,
+                    readOnly: true,
+                    onTap: selectDate,
+                    decoration: InputDecoration(
+                      labelText: "Data de nascimento",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      suffixIcon: const Icon(Icons.calendar_today),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: "Telefone",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: passwordController,
+                    obscureText: obscurePassword,
+                    onChanged: (value) => validatePassword(),
+                    decoration: InputDecoration(
+                      labelText: "Senha",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            obscurePassword = !obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  TextField(
+                    controller: confirmPasswordController,
+                    obscureText: obscureConfirmPassword,
+                    onChanged: (value) => validatePassword(),
+                    decoration: InputDecoration(
+                      labelText: "Confirmar senha",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          obscureConfirmPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            obscureConfirmPassword =
+                                !obscureConfirmPassword;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    passwordMessage,
+                    style: TextStyle(
+                      color: passwordMessage == "Senhas iguais"
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: register,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                      ),
+                      child: const Text("Registrar"),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
