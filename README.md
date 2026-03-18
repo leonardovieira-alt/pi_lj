@@ -1,16 +1,36 @@
-# pi_lj
+# L&J App (Flutter)
 
-A new Flutter project.
+Aplicativo mobile em Flutter para autenticacao de usuarios, exibicao de catalogo de produtos e gerenciamento basico de perfil, integrado com a API L&J.
 
-## Getting Started
+## Visao geral
 
-This project is a starting point for a Flutter application.
+- Login e registro de usuarios
+- Splash screen animada
+- Catalogo com dados vindos da API
+- Perfil com visualizacao de dados e logout com confirmacao
 
-A few resources to get you started if this is your first Flutter project:
+## Documentacao das telas
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Para ver os detalhes de cada tela, fluxo de navegacao e referencias visuais, acesse:
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Documentacao de Telas](docs/screens/README.md)
+
+## Como executar
+
+1. Instale dependencias:
+
+```bash
+flutter pub get
+```
+
+2. Execute o app:
+
+```bash
+flutter run
+```
+
+3. Opcional: definir URL da API por ambiente:
+
+```bash
+flutter run --dart-define=API_BASE_URL=https://apiserverlj.up.railway.app/api
+```
