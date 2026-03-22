@@ -62,4 +62,46 @@ class AuthService {
     }
     await ApiClient.clearToken();
   }
+
+  Future<void> requestPasswordReset({required String emailOrPhone}) async {
+    final response = await ApiClient.post('/auth/forgot-password', {
+      'emailOrPhone': emailOrPhone,
+    });
+
+    if (response['success'] != true) {
+      throw const ApiException('Falha ao solicitar redefinição de senha');
+    }
+  }
+
+  Future<void> verifyResetCode({
+    required String emailOrPhone,
+    required String code,
+  }) async {
+    final response = await ApiClient.post('/auth/verify-code', {
+      'emailOrPhone': emailOrPhone,
+      'code': code,
+    });
+
+    if (response['success'] != true) {
+      throw const ApiException('Código inválido ou expirado');
+    }
+  }
+
+  Future<void> resetPassword({
+    required String emailOrPhone,
+    required String code,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    final response = await ApiClient.post('/auth/reset-password', {
+      'emailOrPhone': emailOrPhone,
+      'code': code,
+      'newPassword': newPassword,
+      'confirmPassword': confirmPassword,
+    });
+
+    if (response['success'] != true) {
+      throw const ApiException('Falha ao redefinir senha');
+    }
+  }
 }

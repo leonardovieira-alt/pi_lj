@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/auth_service.dart';
 import '../../../features/home/presentation/home_shell.dart';
 import 'register_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -194,9 +195,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 8),
-                          child: Wrap(
-                            alignment: WrapAlignment.spaceBetween,
-                            runSpacing: 4,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -223,7 +224,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ],
                               ),
                               TextButton(
-                                onPressed: isLoading ? null : () {},
+                                onPressed: isLoading
+                                    ? null
+                                    : () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const ForgotPasswordScreen(),
+                                          ),
+                                        );
+                                      },
                                 child: const Text(
                                   'Esqueceu a senha ?',
                                   style: TextStyle(
