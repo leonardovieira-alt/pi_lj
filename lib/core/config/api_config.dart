@@ -17,4 +17,9 @@ class ApiConfig {
 
     return 'https://apiserverlj.up.railway.app/api';
   }
+
+  // Base URL para imagens (sem /api)
+  static String get imageBaseUrl {
+    return 'https://apiserverlj.up.railway.app';
+  }
 }

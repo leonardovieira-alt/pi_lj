@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -44,7 +47,83 @@ class ApiClient {
     Map<String, dynamic> data,
   ) async {
     try {
+      print('📤 ApiClient.post($path) - Enviando: $data');
       final response = await _dio.post(path, data: data);
+      final result = _asJson(response.data);
+      print('✅ ApiClient.post($path) - Resposta: $result');
+      return result;
+    } on DioException catch (e) {
+      final errorMsg = _messageFromError(e);
+      print('❌ ApiClient.post($path) - Erro: $errorMsg');
+      print('   Status: ${e.response?.statusCode}');
+      print('   Body: ${e.response?.data}');
+      throw ApiException(errorMsg);
+    }
+  }
+
+  static Future<Map<String, dynamic>> postWithFile(
+    String path,
+    Map<String, dynamic> data, {
+    required String fileKey,
+    required Uint8List fileBytes,
+    required String fileName,
+  }) async {
+    try {
+      final formData = FormData();
+
+      // Adicionar campos de texto
+      for (final entry in data.entries) {
+        if (entry.value == null) {
+          continue; // Pular valores null
+        }
+
+        if (entry.value is List) {
+          // Para listas, enviar como JSON string
+          final jsonString = jsonEncode(entry.value);
+          formData.fields.add(MapEntry(entry.key, jsonString));
+        } else if (entry.value is! Uint8List) {
+          formData.fields.add(MapEntry(entry.key, entry.value.toString()));
+        }
+      }
+
+      // Adicionar arquivo
+      formData.files.add(
+        MapEntry(
+          fileKey,
+          MultipartFile.fromBytes(fileBytes, filename: fileName),
+        ),
+      );
+
+      print('📤 ApiClient.postWithFile($path) - Enviando: ${data.keys.where((k) => data[k] != null).toList()} + arquivo ($fileName)');
+
+      final response = await _dio.post(path, data: formData);
+      final result = _asJson(response.data);
+      print('✅ ApiClient.postWithFile($path) - Resposta: $result');
+      return result;
+    } on DioException catch (e) {
+      final errorMsg = _messageFromError(e);
+      print('❌ ApiClient.postWithFile($path) - Erro: $errorMsg');
+      print('   Status: ${e.response?.statusCode}');
+      print('   Body: ${e.response?.data}');
+      throw ApiException(errorMsg);
+    }
+  }
+
+  static Future<Map<String, dynamic>> put(
+    String path,
+    Map<String, dynamic> data,
+  ) async {
+    try {
+      final response = await _dio.put(path, data: data);
+      return _asJson(response.data);
+    } on DioException catch (e) {
+      throw ApiException(_messageFromError(e));
+    }
+  }
+
+  static Future<Map<String, dynamic>> delete(String path) async {
+    try {
+      final response = await _dio.delete(path);
       return _asJson(response.data);
     } on DioException catch (e) {
       throw ApiException(_messageFromError(e));
