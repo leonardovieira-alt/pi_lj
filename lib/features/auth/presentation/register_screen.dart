@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../data/auth_service.dart';
 
@@ -35,6 +36,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+
+  // formatação de número de telefone
+
+  String formatPhone(String value) {
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+
+    if (digits.length <= 2) {
+      return '(${digits}';
+    } else if (digits.length <= 7) {
+      return '(${digits.substring(0, 2)}) ${digits.substring(2)}';
+    } else if (digits.length <= 11) {
+      return '(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7)}';
+    } else {
+      return '(${digits.substring(0, 2)}) ${digits.substring(2, 7)}-${digits.substring(7, 11)}';
+    }
+  }
+
+  void onPhoneChanged(String value) {
+    final formatted = formatPhone(value);
+
+    phoneController.value = TextEditingValue(
+      text: formatted,
+      selection: TextSelection.collapsed(offset: formatted.length),
+    );
+  }
+
+// formatação de data para o formato brasileiro
+
   Future<void> selectDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -44,8 +73,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (picked != null) {
+      final day = picked.day.toString().padLeft(2, '0');
+      final month = picked.month.toString().padLeft(2, '0');
+
       setState(() {
-        birthController.text = '${picked.day}/${picked.month}/${picked.year}';
+        birthController.text = '$day/$month/${picked.year}';
       });
     }
   }
@@ -63,9 +95,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> register() async {
-    if (isLoading) {
-      return;
-    }
+    if (isLoading) return;
 
     final nome = nameController.text.trim();
     final email = emailController.text.trim();
@@ -88,6 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     setState(() => isLoading = true);
+
     try {
       await authService.register(
         nome: nome,
@@ -96,29 +127,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
         senhaConfirm: senhaConfirm,
       );
 
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Cadastro realizado com sucesso')),
       );
+
       Navigator.pop(context);
     } catch (e) {
-      if (!mounted) {
-        return;
-      }
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(e.toString())),
       );
     } finally {
-      if (mounted) {
-        setState(() => isLoading = false);
-      }
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
-  InputDecoration inputDecoration({required String hint, Widget? suffixIcon, Widget? prefixIcon}) {
+  InputDecoration inputDecoration({
+    required String hint,
+    Widget? suffixIcon,
+    Widget? prefixIcon,
+  }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: Color(0xFF6B7280)),
@@ -192,79 +223,68 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       IconButton(
                         onPressed: () => Navigator.pop(context),
                         icon: const Icon(Icons.arrow_back, size: 20),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
                       ),
+
                       const SizedBox(height: 10),
+
                       const Text(
                         'Registro',
                         style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFF111827),
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          const Text(
-                            'Ja possui uma conta? ',
-                            style: TextStyle(fontSize: 12, color: Color(0xFF6B7280)),
-                          ),
-                          GestureDetector(
-                            onTap: () => Navigator.pop(context),
-                            child: const Text(
-                              'Entrar',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFF2563EB),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+
                       const SizedBox(height: 20),
+
                       fieldLabel('Nome Completo'),
                       TextField(
                         controller: nameController,
                         decoration: inputDecoration(hint: 'Usuario da Silva'),
                       ),
+
                       const SizedBox(height: 12),
+
                       fieldLabel('Email'),
                       TextField(
                         controller: emailController,
                         decoration: inputDecoration(hint: 'usuario@gmail.com'),
                       ),
+
                       const SizedBox(height: 12),
-                      fieldLabel('Aniversario'),
+
+                      fieldLabel('Data de Nascimento'),
                       TextField(
                         controller: birthController,
                         readOnly: true,
                         onTap: selectDate,
                         decoration: inputDecoration(
-                          hint: '01/01/2000',
-                          suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18),
+                          hint: 'dd/MM/yyyy',
+                          suffixIcon: const Icon(Icons.calendar_today_outlined),
                         ),
                       ),
+
                       const SizedBox(height: 12),
-                      fieldLabel('Phone Number'),
+
+                      fieldLabel('Número de Telefone'),
                       TextField(
                         controller: phoneController,
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: onPhoneChanged,
                         decoration: inputDecoration(
-                          hint: '(11) 9 1234-5678',
-                          prefixIcon: Container(
-                            width: 56,
-                            alignment: Alignment.center,
-                            child: const Text(
-                              '+55',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF374151)),
-                            ),
+                          hint: '(00) 00000-0000',
+                          prefixIcon: const Padding(
+                            padding: EdgeInsets.all(12),
+                            child: Text('+55'),
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 12),
+
                       fieldLabel('Senha'),
                       TextField(
                         controller: passwordController,
@@ -273,55 +293,40 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         decoration: inputDecoration(
                           hint: '******',
                           suffixIcon: IconButton(
-                            onPressed: isLoading
-                                ? null
-                                : () => setState(() => obscurePassword = !obscurePassword),
+                            onPressed: () {
+                              setState(() {
+                                obscurePassword = !obscurePassword;
+                              });
+                            },
                             icon: Icon(
                               obscurePassword ? Icons.visibility_off : Icons.visibility,
-                              size: 18,
-                              color: const Color(0xFF9CA3AF),
                             ),
                           ),
                         ),
                       ),
+
                       if (passwordMessage.isNotEmpty) ...[
                         const SizedBox(height: 6),
                         Text(
                           passwordMessage,
                           style: TextStyle(
-                            fontSize: 12,
-                            color:
-                                passwordMessage == 'Senhas iguais' ? Colors.green : Colors.red,
+                            color: passwordMessage == 'Senhas iguais'
+                                ? Colors.green
+                                : Colors.red,
                           ),
                         ),
                       ],
-                      const SizedBox(height: 16),
+
+                      const SizedBox(height: 20),
+
                       SizedBox(
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
                           onPressed: isLoading ? null : register,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFA400),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0,
-                          ),
                           child: isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text(
-                                  'Registrar-se',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                                ),
+                              ? const CircularProgressIndicator(color: Colors.white)
+                              : const Text('Registrar-se'),
                         ),
                       ),
                     ],

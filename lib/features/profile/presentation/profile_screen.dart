@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../shared/models/user_model.dart';
 import '../../auth/data/auth_service.dart';
@@ -86,7 +87,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               TextField(
                 controller: confirmController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Confirmar nova senha'),
+                decoration: const InputDecoration(
+                  labelText: 'Confirmar nova senha',
+                ),
               ),
             ],
           ),
@@ -99,7 +102,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: () {
                 if (newController.text != confirmController.text) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('As novas senhas nao coincidem.')),
+                    const SnackBar(
+                      content: Text('As novas senhas nao coincidem.'),
+                    ),
                   );
                   return;
                 }
@@ -123,7 +128,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  InputDecoration inputDecoration({required String hint, Widget? suffixIcon, Widget? prefixIcon}) {
+  InputDecoration inputDecoration({
+    required String hint,
+    Widget? suffixIcon,
+    Widget? prefixIcon,
+  }) {
     return InputDecoration(
       hintText: hint,
       hintStyle: const TextStyle(color: Color(0xFF111827)),
@@ -199,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           final user = snapshot.data;
           if (user == null) {
-            return const Center(child: Text('Perfil nao encontrado'));
+            return const Center(child: Text('Perfil não encontrado'));
           }
 
           return SingleChildScrollView(
@@ -252,16 +261,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                fieldLabel('Aniversario'),
+                fieldLabel('Data de Nascimento'),
                 TextField(
                   decoration: inputDecoration(
                     hint: '01/01/2000',
-                    suffixIcon: const Icon(Icons.calendar_today_outlined, size: 18),
+                    suffixIcon: const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 18,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
-                fieldLabel('Phone Number'),
+                fieldLabel('Número de Telefone'),
                 TextFormField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   initialValue: user.telefone ?? '',
                   decoration: inputDecoration(
                     hint: user.telefone ?? '(11) 9 1234-5678',
@@ -270,7 +284,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       alignment: Alignment.center,
                       child: const Text(
                         '+55',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF374151)),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Color(0xFF374151),
+                        ),
                       ),
                     ),
                   ),
@@ -303,7 +320,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Perfil atualizado localmente.')),
+                        const SnackBar(
+                          content: Text('Perfil atualizado localmente.'),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -316,7 +335,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: const Text(
                       'Salvar',
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
@@ -326,7 +348,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     onPressed: confirmLogout,
                     child: const Text(
                       'Sair',
-                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ),

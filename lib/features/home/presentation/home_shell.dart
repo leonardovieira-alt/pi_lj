@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../shared/widgets/app_bottom_nav.dart';
 import '../../catalog/presentation/catalog_screen.dart';
+import '../../catalog/presentation/admin_orders_screen.dart';
 
 class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
@@ -15,6 +16,7 @@ class _HomeShellState extends State<HomeShell> {
 
   late final List<Widget> pages = const [
     CatalogScreen(),
+    AdminOrdersScreen(),
     _FavoritesPlaceholder(),
     _SearchPlaceholder(),
     _CartPlaceholder(),
